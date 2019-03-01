@@ -23,7 +23,7 @@ const ProfileSchema = new Schema({
   },
   status: {
     type: String,
-    required
+    required: true
   },
   skills: {
     type: [String],
@@ -57,7 +57,7 @@ const ProfileSchema = new Schema({
       },
       current: {
         type: Boolean,
-        default: False
+        default: false
       },
       description: {
         type: String
@@ -87,7 +87,7 @@ const ProfileSchema = new Schema({
       },
       current: {
         type: Boolean,
-        default: False
+        default: false
       },
       description: {
         type: String
