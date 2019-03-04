@@ -10,16 +10,15 @@ const validateEducationInput = require("../../validation/education");
 
 // Load Profile Model
 const Profile = require("../../models/Profile");
-
 // Load User Model
 const User = require("../../models/User");
 
 // @route   GET api/profile/test
 // @desc    Tests profile route
 // @access  Public
-router.get("/test", (req, res) => res.json({ msg: "Profile Working" }));
+router.get("/test", (req, res) => res.json({ msg: "Profile Works" }));
 
-// @route   GET api/profile/
+// @route   GET api/profile
 // @desc    Get current users profile
 // @access  Private
 router.get(
@@ -37,7 +36,7 @@ router.get(
         }
         res.json(profile);
       })
-      .catch(err => err.status(404).json(err));
+      .catch(err => res.status(404).json(err));
   }
 );
 
@@ -63,8 +62,10 @@ router.get("/all", (req, res) => {
 // @route   GET api/profile/handle/:handle
 // @desc    Get profile by handle
 // @access  Public
+
 router.get("/handle/:handle", (req, res) => {
   const errors = {};
+
   Profile.findOne({ handle: req.params.handle })
     .populate("user", ["name", "avatar"])
     .then(profile => {
@@ -72,6 +73,7 @@ router.get("/handle/:handle", (req, res) => {
         errors.noprofile = "There is no profile for this user";
         res.status(404).json(errors);
       }
+
       res.json(profile);
     })
     .catch(err => res.status(404).json(err));
@@ -80,8 +82,10 @@ router.get("/handle/:handle", (req, res) => {
 // @route   GET api/profile/user/:user_id
 // @desc    Get profile by user ID
 // @access  Public
+
 router.get("/user/:user_id", (req, res) => {
   const errors = {};
+
   Profile.findOne({ user: req.params.user_id })
     .populate("user", ["name", "avatar"])
     .then(profile => {
@@ -89,6 +93,7 @@ router.get("/user/:user_id", (req, res) => {
         errors.noprofile = "There is no profile for this user";
         res.status(404).json(errors);
       }
+
       res.json(profile);
     })
     .catch(err =>
@@ -96,7 +101,7 @@ router.get("/user/:user_id", (req, res) => {
     );
 });
 
-// @route   POST api/profile/
+// @route   POST api/profile
 // @desc    Create or edit user profile
 // @access  Private
 router.post(
@@ -111,51 +116,50 @@ router.post(
       return res.status(400).json(errors);
     }
 
-    // Get feilds
-    const profileFeilds = {};
-    profileFeilds.user = req.user.id;
-    if (req.body.handle) profileFeilds.handle = req.body.handle;
-    if (req.body.company) profileFeilds.company = req.body.company;
-    if (req.body.website) profileFeilds.website = req.body.website;
-    if (req.body.loaction) profileFeilds.loaction = req.body.loaction;
-    if (req.body.bio) profileFeilds.bio = req.body.bio;
-    if (req.body.status) profileFeilds.status = req.body.status;
+    // Get fields
+    const profileFields = {};
+    profileFields.user = req.user.id;
+    if (req.body.handle) profileFields.handle = req.body.handle;
+    if (req.body.company) profileFields.company = req.body.company;
+    if (req.body.website) profileFields.website = req.body.website;
+    if (req.body.location) profileFields.location = req.body.location;
+    if (req.body.bio) profileFields.bio = req.body.bio;
+    if (req.body.status) profileFields.status = req.body.status;
     if (req.body.githubusername)
-      profileFeilds.githubusername = req.body.githubusername;
-
-    // Skills - Split into array
+      profileFields.githubusername = req.body.githubusername;
+    // Skills - Spilt into array
     if (typeof req.body.skills !== "undefined") {
-      profileFeilds.skills = req.body.skills.split(",");
+      profileFields.skills = req.body.skills.split(",");
     }
 
     // Social
-    profileFeilds.social = {};
-    if (req.body.youtube) profileFeilds.social.youtube = req.body.youtube;
-    if (req.body.twitter) profileFeilds.social.twitter = req.body.twitter;
-    if (req.body.facebook) profileFeilds.social.facebook = req.body.facebook;
-    if (req.body.linkedin) profileFeilds.social.linkedin = req.body.linkedin;
-    if (req.body.instagram) profileFeilds.social.instagram = req.body.instagram;
+    profileFields.social = {};
+    if (req.body.youtube) profileFields.social.youtube = req.body.youtube;
+    if (req.body.twitter) profileFields.social.twitter = req.body.twitter;
+    if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
+    if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
+    if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
 
     Profile.findOne({ user: req.user.id }).then(profile => {
       if (profile) {
         // Update
         Profile.findOneAndUpdate(
           { user: req.user.id },
-          { $set: profileFeilds },
+          { $set: profileFields },
           { new: true }
         ).then(profile => res.json(profile));
       } else {
         // Create
 
         // Check if handle exists
-        Profile.findOne({ handle: profileFeilds.handle }).then(profile => {
+        Profile.findOne({ handle: profileFields.handle }).then(profile => {
           if (profile) {
             errors.handle = "That handle already exists";
             res.status(400).json(errors);
           }
 
           // Save Profile
-          new Profile(profileFeilds).save().then(profile => res.json(profile));
+          new Profile(profileFields).save().then(profile => res.json(profile));
         });
       }
     });
@@ -188,7 +192,7 @@ router.post(
         description: req.body.description
       };
 
-      // Add to experience array
+      // Add to exp array
       profile.experience.unshift(newExp);
 
       profile.save().then(profile => res.json(profile));
@@ -222,7 +226,7 @@ router.post(
         description: req.body.description
       };
 
-      // Add to education array
+      // Add to exp array
       profile.education.unshift(newEdu);
 
       profile.save().then(profile => res.json(profile));
@@ -278,7 +282,7 @@ router.delete(
   }
 );
 
-// @route   DELETE api/profile/
+// @route   DELETE api/profile
 // @desc    Delete user and profile
 // @access  Private
 router.delete(
