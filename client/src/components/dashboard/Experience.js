@@ -1,13 +1,17 @@
 import React, { Component } from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Moment from "react-moment";
-import { getCurrentProfile, deleteAccount } from "../../actions/profileActions";
+import { deleteExperience } from "../../actions/profileActions";
 import Spinner from "../common/Spinner";
 import ProfileActions from "./ProfileActions";
 
 class Experience extends Component {
+  onDeleteClick = id => {
+    this.props.deleteExperience(id);
+  };
+
   render() {
     const experience = this.props.experience.map(exp => (
       <tr key={exp._id}>
@@ -22,7 +26,9 @@ class Experience extends Component {
           )}
         </td>
         <td>
-          <button className="btn btn-danger">Delete</button>
+          <button className="btn btn-danger" onClick={this.onDeleteClick}>
+            Delete
+          </button>
         </td>
       </tr>
     ));
@@ -45,10 +51,15 @@ class Experience extends Component {
   }
 }
 
-Experience.propTypes = {};
+Experience.propTypes = {
+  deleteExperience: PropTypes.func.isRequired
+};
 
 const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps)(withRouter(Experience));
+export default connect(
+  mapStateToProps,
+  { deleteExperience }
+)(Experience);
