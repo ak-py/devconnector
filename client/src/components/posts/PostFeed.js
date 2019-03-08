@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import PostItem from "./PostItem";
 
 class PostFeed extends Component {
   render() {
@@ -8,7 +9,7 @@ class PostFeed extends Component {
   }
 }
 
-PostFeed.proptypes = {
+PostFeed.propTypes = {
   posts: PropTypes.array.isRequired
 };
 
