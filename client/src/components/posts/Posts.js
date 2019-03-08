@@ -11,8 +11,8 @@ class Posts extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-12">
-              <h1>kjsdafh</h1>
-              {/* <PostForm /> */}
+              {/* <h1>kjsdafh</h1> */}
+              <PostForm />
             </div>
           </div>
         </div>
